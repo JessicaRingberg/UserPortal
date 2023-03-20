@@ -1,0 +1,36 @@
+﻿@inject NavigationManager nav
+@inject IJSRuntime jsRuntime
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<div @onclick="ToggleTheme">
+    @if (HttpContextAccessor.HttpContext.Request.Cookies["style"] == "False")
+    {
+        <ion-icon name="moon-outline" style="font-size: 50px;"></ion-icon>
+    }
+    else if (HttpContextAccessor.HttpContext.Request.Cookies["style"] == "True")
+    {
+        <ion-icon name="sunny-outline" style="font-size: 50px;"></ion-icon>
+    }
+    else
+    {
+        <ion-icon name="moon-outline" style="font-size: 50px;"></ion-icon>
+    }
+</div>
+
+@code
+{
+    private bool darkTheme;
+    public void ToggleTheme()
+    {
+        string myCookieValue = HttpContextAccessor.HttpContext.Request.Cookies["style"];
+        if (myCookieValue == "False")
+        {
+            darkTheme = true;
+        }
+        else
+        {
+            darkTheme = false;
+        } 
+        nav.NavigateTo($"/style?style={darkTheme}", true);
+    }
+}

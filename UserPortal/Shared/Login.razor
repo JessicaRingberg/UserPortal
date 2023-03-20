@@ -1,0 +1,69 @@
+﻿@using System.Diagnostics;
+@using UserPortal.Authentication
+@inject AuthService userService
+@inject IJSRuntime js
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager navManager
+@inject UnitOfWork<LeanCloudContext> _unitOfWork
+
+
+<a class="button is-light" @onclick="@ModalShow">
+    Log in
+</a>
+@if (showModal)
+{
+    <div class="modal is-active">
+        <div class="modal-background"></div>
+        <p class="modal-header">Login</p>
+        <div class="modal-content">
+            <div class="field">
+                <div class="control">
+                    <label>Email</label>
+                    <input @bind="model.Email" class="input" type="text" placeholder="Email">
+                    <label>Password</label>
+                    <input @bind="model.Password" class="input" type="text" placeholder="Password">
+                         <button class="button is-primary" @onclick="@Authenticate">Login</button>
+                         <button class="button is-danger" @onclick="@ModalCancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" @onclick="@ModalCancel"></button>
+    </div>
+}
+@code {
+    bool showModal = false;
+    void ModalShow() => showModal = true;
+    void ModalCancel() => showModal = false;
+    void ModalOk()
+    {
+        showModal = false;
+    }
+
+    public class Model
+    {
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+    }
+
+     Model model = new Model();
+
+    private async Task Authenticate()
+    {
+
+        //var auth = await AuthService.Login(model.Email);
+        var userAccount = _unitOfWork.Users.GetAll();
+        var user = userAccount.FirstOrDefault(u => u.Email == model.Email);
+        if (user == null)
+        {
+            await js.InvokeVoidAsync("alert", "Invalid email");
+            return;        
+        } 
+        var authStateProvider = (CustomAuthStateProvider)authenticationStateProvider;
+        await authStateProvider.UpdateAuthenticationState(new UserSession
+            {
+                Email = user.Email
+                
+            });
+        navManager.NavigateTo("/rootPage", true);
+    }
+}

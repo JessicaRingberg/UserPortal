@@ -1,0 +1,24 @@
+﻿@page "/rootPage";
+@using AndonCloudDAL;
+@inject UnitOfWork<LeanCloudContext> _unitOfWork
+
+<h3>RootUserPage</h3>
+<div>
+  <CascadingAuthenticationState>
+            <AuthorizeView>
+                <Authorized>
+                    <img src="logotype.png" width="112" height="28">
+                <h4>Authorized, @context.User</h4>
+                <ul>
+                    <li></li>
+                </ul>
+            </Authorized>
+            <NotAuthorized>
+                <p>Not authorized</p>
+            </NotAuthorized>
+            </AuthorizeView>
+            </CascadingAuthenticationState>
+</div>
+@code {
+
+}
